@@ -9,7 +9,7 @@ models = ["gpt-3.5-turbo", "gpt-4"]
 
 def short_summary():
     chat = ChatOpenAI(model_name=models[0], temperature=0)
-    messages = [SystemMessage(content="You will receive a list of messages, each with a role user or assistant. The focus should be on the first question of the user.  Return only a summary with a lenght of three to five words."),
+    messages = [SystemMessage(content="You will receive a list of messages, each with a role user or assistant.  Return only a summary with a lenght of three to five words."),
                 HumanMessage(content=str(st.session_state["messages"]))]
     res = chat.invoke(messages)
     return res.content
