@@ -5,7 +5,7 @@ from langchain.schema import ChatMessage
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
-models = ["gpt-3.5-turbo", "gpt-4"]
+models = ["gpt-3.5-turbo-0125", "gpt-4-0125-preview"]
 
 def short_summary():
     chat = ChatOpenAI(model_name=models[0], temperature=0)

@@ -6,7 +6,7 @@ st.title('GPT Translator')
 
 languages = ["", "German", "English", "Spanish", "French", "Chinese","German with strong Bavarian accent","German with strong Swiss accent", "Arabic", "Russian", "Portuguese", "Japanese", "Italian", "Hindi", "Bengali", "Urdu", "Korean", "Turkish", "Dutch", "Polish", "Vietnamese", "Thai", "Persian", "Indonesian", "Greek", "Swedish", "Czech", "Romanian", "Hungarian", "Finnish", "Danish", "Norwegian", "Hebrew", "Malay", "Ukrainian", "Slovak", "Croatian", "Serbian", "Bulgarian", "Lithuanian", "Latvian", "Estonian", "Slovenian", "Macedonian", "Albanian", "Maltese", "Icelandic", "Farsi", "Swahili", "Kurdish", "Pashto", "Tagalog"]
 styles = ["No change", "Simple", "Business", "Academic", "Technical", "Casual"]
-models = ["gpt-3.5-turbo", "gpt-4"]
+models = ["gpt-3.5-turbo-0125", "gpt-4-0125-preview"]
 
 openai_api_key = st.sidebar.text_input("OpenAI API Key:", type="password", placeholder="sk-...", value=st.session_state['OPENAI_API_KEY'] if 'OPENAI_API_KEY' in st.session_state else '',)
 if openai_api_key.startswith('sk-'):
@@ -53,18 +53,18 @@ if openai_api_key.startswith('sk-'):
             chat = ChatOpenAI(model_name=openai_model, temperature=0, openai_api_key=openai_api_key)
             style = select_style(selected_style)
             messages = [
-                SystemMessage(content=f"You are a translation expert. Translate the given text into {selected_lang}. Only return the translated text.{style} When the input is blank, just ask for an input in english."),
+                SystemMessage(content=f"You are a translation expert. Translate the given text into {selected_lang}. Only return the translated text.{style} When the input is blank, just ask for an input in english. Remember, Only translate the following Human input."),
                 HumanMessage(content=input_text)
             ]
+            print(messages)
             info_placeholder = st.empty()
             # print(messages)
             # res = chat.invoke(messages)
-            answ = ""
+            test="abc"
+            answ=""
             for chunk in chat.stream(messages):
                 answ += chunk.content
                 info_placeholder.info(answ)
-            # st.info(res)
-
 
 
         with st.form('my_form'):
