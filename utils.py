@@ -2,29 +2,67 @@ import os
 import random
 import streamlit as st
 from langchain.schema import ChatMessage
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 
 models = ["gpt-3.5-turbo", "gpt-4"]
 
+def short_summary():
+    chat = ChatOpenAI(model_name=models[0], temperature=0)
+    messages = [SystemMessage(content="You will receive a list of messages, each with a role user or assistant. The focus should be on the first question of the user.  Return only a summary with a lenght of three to five words."),
+                HumanMessage(content=str(st.session_state["messages"]))]
+    res = chat.invoke(messages)
+    return res.content
+
+def reset_chat():
+    if "messages" in st.session_state:
+        if not "loaded" in st.session_state or not st.session_state["loaded"]:
+            if len(st.session_state["messages"]) > 1:
+                if st.session_state["current_page"]  not in st.session_state:
+                    st.session_state[st.session_state["current_page"]] = [st.session_state["messages"]]
+                    st.session_state["page_names"] = [short_summary()]
+                else:
+                    st.session_state[st.session_state["current_page"]].append(st.session_state["messages"])
+                    st.session_state["page_names"].append(short_summary())
+        elif "loaded" in st.session_state and st.session_state["loaded"]:
+            st.session_state[st.session_state["current_page"]][st.session_state["loaded_from"]] = st.session_state["messages"] 
+            
+        
+        del st.session_state["messages"]
+        st.session_state["loaded"] = False
+
 def enable_chat_history(func):
     if os.environ.get("OPENAI_API_KEY"):
+        
 
         # to clear chat history after swtching chatbot
         current_page = func.__qualname__
+
+        
         if "current_page" not in st.session_state:
             try:
                 del st.session_state["messages"]
             except:
                 pass
             st.session_state["current_page"] = current_page
-        if st.session_state["current_page"] != current_page:
-            try:
-                st.cache_resource.clear()
-                
-                del st.session_state["current_page"]
-                del st.session_state["messages"]
-            except:
-                pass
+        elif st.session_state["current_page"] != current_page:
+            # if not "loaded" in st.session_state or not st.session_state["loaded"]:
+            #     if len(st.session_state["messages"]) > 1:
+            #         if st.session_state["current_page"]  not in st.session_state:
+            #             st.session_state[st.session_state["current_page"] ] = [st.session_state["messages"]]
+            #         else:
+            #             st.session_state[st.session_state["current_page"] ].append(st.session_state["messages"])
+            # elif "loaded" in st.session_state and st.session_state["loaded"]:
+            #     st.session_state[st.session_state["current_page"]][st.session_state["loaded_from"]] = st.session_state["messages"] 
+            # st.session_state["loaded"] = False
+            # try:
+            #     del st.session_state["messages"]
+            # except:
+            #     pass
+            reset_chat()
+            st.session_state["current_page"] = current_page
 
+        
 
         # to show chat history on ui ChatMessage(role="assistant", content="How can I help you?")
         if "messages" not in st.session_state:
@@ -77,9 +115,8 @@ def configure_model():
         )
         st.session_state['OPENAI_MODEL'] = openai_model
 
-def reset_chat():
-    if "messages" in st.session_state:
-        del st.session_state["messages"] 
+
+        
     
 def configure_new_chat():
     st.sidebar.markdown("<br><br>", unsafe_allow_html=True)
@@ -87,10 +124,23 @@ def configure_new_chat():
 
 def check_key():
     if "current_key" not in st.session_state or st.session_state["current_key"] != st.session_state['OPENAI_API_KEY']:
-        del st.session_state["messages"]
+        reset_chat()
         st.rerun()
 
 def check_model():
     if "current_model" not in st.session_state or st.session_state["current_model"] != st.session_state['OPENAI_MODEL']:  
-        del st.session_state["messages"]
+        reset_chat()
         st.rerun()
+
+def load_old_chats():
+    current_page = st.session_state["current_page"]
+    if current_page in st.session_state:
+            i = len(st.session_state[current_page]) -1
+            for page in reversed(st.session_state[current_page]):
+                if st.sidebar.button(st.session_state["page_names"][i], key=str(i)):
+                    reset_chat()
+                    st.session_state["loaded"] = True
+                    st.session_state["loaded_from"] = i
+                    st.session_state["messages"] = st.session_state[current_page][i]
+                    st.rerun()
+                i = i-1

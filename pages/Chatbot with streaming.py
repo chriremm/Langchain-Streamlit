@@ -22,6 +22,7 @@ class Chatbot_streaming:
         utils.configure_openai_api_key()
         utils.configure_model()
         utils.configure_new_chat()
+        utils.load_old_chats()
 
     @utils.enable_chat_history
     def main(self):
