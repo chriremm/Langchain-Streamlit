@@ -18,12 +18,13 @@ def reset_chat():
     if "messages" in st.session_state:
         if not "loaded" in st.session_state or not st.session_state["loaded"]:
             if len(st.session_state["messages"]) > 1:
+                pn = "page_name" + st.session_state["current_page"]
                 if st.session_state["current_page"]  not in st.session_state:
                     st.session_state[st.session_state["current_page"]] = [st.session_state["messages"]]
-                    st.session_state["page_names"] = [short_summary()]
+                    st.session_state[pn] = [short_summary()]
                 else:
                     st.session_state[st.session_state["current_page"]].append(st.session_state["messages"])
-                    st.session_state["page_names"].append(short_summary())
+                    st.session_state[pn].append(short_summary())
         elif "loaded" in st.session_state and st.session_state["loaded"]:
             st.session_state[st.session_state["current_page"]][st.session_state["loaded_from"]] = st.session_state["messages"] 
             
@@ -125,11 +126,13 @@ def configure_new_chat():
 def check_key():
     if "current_key" not in st.session_state or st.session_state["current_key"] != st.session_state['OPENAI_API_KEY']:
         reset_chat()
+        st.session_state["current_key"] = st.session_state['OPENAI_API_KEY']
         st.rerun()
 
 def check_model():
     if "current_model" not in st.session_state or st.session_state["current_model"] != st.session_state['OPENAI_MODEL']:  
         reset_chat()
+        st.session_state["current_model"] = st.session_state['OPENAI_MODEL']
         st.rerun()
 
 def load_old_chats():
@@ -137,7 +140,8 @@ def load_old_chats():
     if current_page in st.session_state:
             i = len(st.session_state[current_page]) -1
             for page in reversed(st.session_state[current_page]):
-                if st.sidebar.button(st.session_state["page_names"][i], key=str(i)):
+                pn = "page_name" + st.session_state["current_page"]
+                if st.sidebar.button(st.session_state[pn][i], key=str(i)):
                     reset_chat()
                     st.session_state["loaded"] = True
                     st.session_state["loaded_from"] = i

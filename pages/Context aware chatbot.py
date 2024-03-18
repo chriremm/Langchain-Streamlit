@@ -52,6 +52,9 @@ AI Assistant:"""
     
     @utils.enable_chat_history
     def main(self):
+        utils.check_key()
+        print("check")
+        utils.check_model()
         
         if len(st.session_state["messages"]) <= 1 or ("loaded" in st.session_state and st.session_state["loaded"]):
             st.session_state["chain"] = self.setup_chain()
@@ -60,8 +63,7 @@ AI Assistant:"""
 
         
 
-        utils.check_key()
-        utils.check_model()
+        
 
         user_query = st.chat_input(placeholder="Ask me anything!")
         if user_query:
