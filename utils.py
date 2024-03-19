@@ -36,7 +36,6 @@ def enable_chat_history(func):
     if os.environ.get("OPENAI_API_KEY"):
         
 
-        # to clear chat history after swtching chatbot
         current_page = func.__qualname__
 
         
@@ -47,19 +46,6 @@ def enable_chat_history(func):
                 pass
             st.session_state["current_page"] = current_page
         elif st.session_state["current_page"] != current_page:
-            # if not "loaded" in st.session_state or not st.session_state["loaded"]:
-            #     if len(st.session_state["messages"]) > 1:
-            #         if st.session_state["current_page"]  not in st.session_state:
-            #             st.session_state[st.session_state["current_page"] ] = [st.session_state["messages"]]
-            #         else:
-            #             st.session_state[st.session_state["current_page"] ].append(st.session_state["messages"])
-            # elif "loaded" in st.session_state and st.session_state["loaded"]:
-            #     st.session_state[st.session_state["current_page"]][st.session_state["loaded_from"]] = st.session_state["messages"] 
-            # st.session_state["loaded"] = False
-            # try:
-            #     del st.session_state["messages"]
-            # except:
-            #     pass
             reset_chat()
             st.session_state["current_page"] = current_page
 
@@ -117,7 +103,10 @@ def configure_model():
         st.session_state['OPENAI_MODEL'] = openai_model
 
 
-        
+def check_loaded():
+    if "loaded" in st.session_state and st.session_state["loaded"]:
+        loaded_from = st.session_state["loaded_from"]
+        st.sidebar.info(f"Currently loaded from chat {loaded_from}.")       
     
 def configure_new_chat():
     st.sidebar.markdown("<br><br>", unsafe_allow_html=True)
