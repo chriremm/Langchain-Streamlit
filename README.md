@@ -22,13 +22,13 @@ Explore the chatbot examples through our multi-page Streamlit app. Access the ap
 To run the application locally, follow these steps:
 ```shell
 # Clone the repository
-$ git clone <repository-url>
+$ git clone https://github.com/chriremm/Langchain-Streamlit.git
 
 # Navigate to the project directory
-$ cd <project-directory>
+$ cd Langchain-Streamlit
 
 # Install the required dependencies
 $ pip install -r requirements.txt
 
 # Run the Streamlit app
-$ streamlit run home.py
+$ streamlit run Home.py
